@@ -6,12 +6,16 @@ interface MenuSectionProps {
   onBackToSunrise: () => void;
   onOpen3DMenu: () => void;
   onAddToCart?: (sushi: any) => void;
+  cartToggle?: React.ReactNode;
+  checkoutButton?: React.ReactNode;
 }
 
 export default function MenuSection({
   onBackToSunrise,
   onOpen3DMenu,
   onAddToCart,
+  cartToggle,
+  checkoutButton,
 }: MenuSectionProps) {
   const [selectedSushi, setSelectedSushi] = useState<number | null>(null);
 
@@ -27,16 +31,19 @@ export default function MenuSection({
   return (
     <div className="menu-section">
       <div className="container">
-        {/* Header */}
         <header className="menu-header">
           <div className="logo">
             <div className="logo-circle">寿</div>
             <h1>Sushi Bar 3D</h1>
           </div>
 
-          <button className="back-to-sunrise" onClick={onBackToSunrise}>
-            🌅 Repeat Animation
-          </button>
+          <div className="header-controls">
+            {cartToggle}
+            {checkoutButton}
+            <button className="back-to-sunrise" onClick={onBackToSunrise}>
+              🌅 Repeat Animation
+            </button>
+          </div>
         </header>
 
         {/* Main Title */}
@@ -95,7 +102,7 @@ export default function MenuSection({
                 </div>
 
                 {/* Price */}
-                <div className="price">{sushi.price} ₽</div>
+                <div className="price">{sushi.price} €</div>
 
                 {/* Badges */}
                 <div className="badges">

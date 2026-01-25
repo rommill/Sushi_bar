@@ -1,4 +1,21 @@
-/* Menu Section */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==================== RESET & BASE ==================== */
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family:
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  overflow-x: hidden;
+}
+
+/* ==================== MENU SECTION ==================== */
 .menu-section {
   padding: 40px 20px;
   background: linear-gradient(to bottom, #fff3e0, #fffaf0);
@@ -199,79 +216,7 @@
   font-size: 1rem;
 }
 
-/* 3D Section */
-.three-d-container {
-  min-height: 100vh;
-  background: #0a0a0a;
-}
-
-.three-d-header {
-  padding: 20px;
-  background: rgba(20, 20, 20, 0.9);
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-}
-
-.three-d-canvas-container {
-  height: 100vh;
-  padding-top: 80px;
-}
-
-.three-d-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  background: rgba(20, 20, 20, 0.9);
-  padding: 20px;
-  text-align: center;
-  color: white;
-}
-
-/* CTA Section */
-.three-d-cta {
-  background: linear-gradient(135deg, #ff6b6b, #ff9e7d);
-  color: white;
-  padding: 80px 20px;
-  text-align: center;
-}
-
-.three-d-cta h2 {
-  font-size: 2.5rem;
-  margin-bottom: 20px;
-}
-
-.three-d-cta p {
-  font-size: 1.2rem;
-  max-width: 600px;
-  margin: 0 auto 40px;
-  opacity: 0.9;
-}
-
-.cta-button.large {
-  padding: 20px 50px;
-  font-size: 1.3rem;
-  background: white;
-  color: #ff6b6b;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  font-weight: bold;
-  transition: all 0.3s;
-}
-
-.cta-button.large:hover {
-  transform: scale(1.05);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-}
-
-/* 3D Container Styles */
+/* ==================== 3D SECTION ==================== */
 .three-d-container {
   min-height: 100vh;
   background: #0a0a0a;
@@ -409,4 +354,448 @@
     padding: 10px 20px;
     margin: 0 15px;
   }
+}
+
+/* ==================== SIMPLE CART ==================== */
+/* ОСНОВНЫЕ СТИЛИ КОТОРЫХ НЕ ХВАТАЕТ */
+.simple-cart {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  width: 350px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+  padding: 24px;
+  z-index: 9999;
+  max-height: 75vh;
+  overflow-y: auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  border: 1px solid #eaeaea;
+}
+
+.cart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.cart-header h3 {
+  margin: 0;
+  color: #333;
+  font-size: 1.3rem;
+  font-weight: 600;
+}
+
+.cart-close-btn {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #888;
+  cursor: pointer;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  transition: all 0.2s;
+  padding: 0;
+  line-height: 1;
+}
+
+.cart-close-btn:hover {
+  background: #f5f5f5;
+  color: #ff4444;
+}
+
+.empty-cart {
+  text-align: center;
+  padding: 40px 20px;
+}
+
+.empty-cart p {
+  color: #666;
+  font-size: 1rem;
+  margin-bottom: 8px;
+}
+
+.empty-hint {
+  font-size: 0.9rem;
+  color: #999;
+}
+
+.cart-items-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.cart-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cart-item:last-child {
+  border-bottom: none;
+}
+
+.item-info {
+  flex: 1;
+  min-width: 0;
+  padding-right: 16px;
+}
+
+.item-name {
+  display: block;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 6px;
+  font-size: 0.95rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.item-subtotal {
+  display: block;
+  color: #666;
+  font-size: 0.85rem;
+}
+
+.item-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.quantity-btn {
+  background: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 6px;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 16px;
+  color: #333;
+  transition: all 0.2s;
+  font-weight: bold;
+  line-height: 1;
+  padding: 0;
+}
+
+.quantity-btn:hover {
+  background: #e9ecef;
+  border-color: #ced4da;
+}
+
+.quantity {
+  min-width: 24px;
+  text-align: center;
+  font-weight: 600;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.remove-btn {
+  background: #fff5f5 !important;
+  border: 1px solid #fed7d7 !important;
+  color: #e53e3e !important;
+  font-size: 18px !important;
+  margin-left: 4px;
+}
+
+.remove-btn:hover {
+  background: #fed7d7 !important;
+  border-color: #feb2b2 !important;
+}
+
+.cart-footer {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 2px solid #f0f0f0;
+}
+
+.cart-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.1rem;
+}
+
+.cart-total span {
+  color: #666;
+}
+
+.cart-total strong {
+  color: #333;
+  font-size: 1.4rem;
+}
+
+.checkout-btn {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s;
+}
+
+.checkout-btn:hover {
+  background: linear-gradient(135deg, #43a047, #1b5e20);
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(76, 175, 80, 0.3);
+}
+
+/* Dark theme for 3D mode */
+.three-d-container .simple-cart {
+  background: rgba(30, 30, 30, 0.95);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.three-d-container .cart-header h3,
+.three-d-container .item-name,
+.three-d-container .cart-total strong {
+  color: white;
+}
+
+.three-d-container .item-subtotal,
+.three-d-container .cart-total span {
+  color: #ccc;
+}
+
+.three-d-container .cart-header {
+  border-bottom-color: rgba(255, 255, 255, 0.1);
+}
+
+.three-d-container .cart-item {
+  border-bottom-color: rgba(255, 255, 255, 0.05);
+}
+
+.three-d-container .cart-footer {
+  border-top-color: rgba(255, 255, 255, 0.1);
+}
+
+.three-d-container .quantity-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(255, 255, 255, 0.2);
+  color: white;
+}
+
+.three-d-container .remove-btn {
+  background: rgba(229, 62, 62, 0.2) !important;
+  border-color: rgba(229, 62, 62, 0.3) !important;
+  color: #ff6b6b !important;
+}
+
+/* Responsive for cart */
+@media (max-width: 768px) {
+  .simple-cart {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    left: 10px;
+    width: auto;
+    max-width: calc(100% - 20px);
+    margin: 0 auto;
+  }
+}
+
+/* Cart toggle button */
+.cart-toggle-btn {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #ff6b6b, #ff9e7d);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  transition: all 0.3s;
+  font-size: 14px;
+  white-space: nowrap;
+}
+
+.cart-toggle-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+}
+
+.cart-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 500;
+}
+
+/* ==================== ANIMATIONS ==================== */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.simple-cart {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* ==================== CHECKOUT NAVIGATION STYLES ==================== */
+.checkout-wrapper {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+}
+
+.checkout-nav-header {
+  background: linear-gradient(135deg, #2d3436, #636e72);
+  color: white;
+  padding: 20px 40px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.checkout-nav {
+  max-width: 1400px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 30px;
+}
+
+.checkout-title {
+  flex: 1;
+}
+
+.checkout-title h1 {
+  margin: 0;
+  font-size: 1.8rem;
+  font-weight: 700;
+}
+
+.checkout-title p {
+  margin: 5px 0 0 0;
+  opacity: 0.8;
+  font-size: 0.95rem;
+}
+
+/* Кнопки навигации */
+.checkout-nav-btn {
+  padding: 12px 24px;
+  background: linear-gradient(135deg, #4caf50, #2e7d32);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+
+.checkout-nav-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(76, 175, 80, 0.3);
+}
+
+.checkout-nav-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.checkout-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-left: 8px;
+}
+
+.back-from-checkout-btn {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.back-from-checkout-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+/* В MenuSection header */
+.menu-header .header-controls {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex-wrap: wrap;
+}
+
+/* Адаптивность */
+@media (max-width: 768px) {
+  .checkout-nav-header {
+    padding: 15px 20px;
+  }
+
+  .checkout-nav {
+    flex-direction: column;
+    gap: 15px;
+    align-items: stretch;
+  }
+
+  .checkout-title {
+    text-align: center;
+  }
+
+  .menu-header .header-controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .menu-header .header-controls button {
+    width: 100%;
+    justify-content: center;
+  }
+}
+/* Japanese fonts */
+body {
+  font-family: 'Noto Sans JP', sans-serif;
+}
+
+h1, h2, h3, .font-japanese {
+  font-family: 'Yusei Magic', cursive;
 }

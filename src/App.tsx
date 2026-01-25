@@ -6,44 +6,117 @@ import MenuSection from "./components/Sections/MenuSection";
 import SushiSphere from "./components/Menu3D/SushiSphere";
 import SushiModal from "./components/UI/SushiModal";
 import SimpleCart from "./components/Cart/SimpleCart";
+import CheckoutPage from "./components/Checkout/CheckoutPage";
 import { useCartStorage } from "./hooks/useCartStorage";
 import type { SushiItem } from "./types";
+import LowPerformanceSushiSphere from "./components/Menu3D/LowPerformanceSushiSphere";
 import "./index.css";
 
+// Функция определения Intel Mac + Chrome
+const isIntelMac = () => {
+  if (typeof navigator === "undefined") return false;
+  const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+  const isChrome =
+    /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
+  return isMac && isChrome;
+};
+
 function App() {
+  // Состояния для навигации
   const [showAnimation, setShowAnimation] = useState(true);
   const [showMenuSection, setShowMenuSection] = useState(false);
   const [show3DSphere, setShow3DSphere] = useState(false);
+  const [showCheckout, setShowCheckout] = useState(false);
+
+  // Состояния для модалки и корзины
   const [selectedSushi, setSelectedSushi] = useState<SushiItem | null>(null);
   const [showModal, setShowModal] = useState(false);
+  const [showCart, setShowCart] = useState(true);
 
-  // Получаем методы из хука - используйте правильные названия
+  // Определяем какую версию 3D сферы использовать
+  const shouldUseLowPerformance = isIntelMac();
+
+  // Хук для работы с корзиной
   const {
-    cart, // Это должно быть cart, а не cartItems
-    selectedSushi: cartSelectedSushi,
-    setSelectedSushi: setCartSelectedSushi,
-    addToCart, // Это addToCart, а не addItem
-    removeFromCart, // Это removeFromCart, а не removeItem
-    updateQuantity, // Это updateQuantity, а не updateItemQuantity
-    clearCart,
-    getTotalPrice, // Это getTotalPrice, а не getTotal
-    getTotalItems, // Это getTotalItems, а не getItemCount
+    cart,
+    addToCart,
+    removeFromCart,
+    updateQuantity,
+    getTotalPrice,
+    getTotalItems,
   } = useCartStorage();
 
+  // Обработчик клика на суши
   const handleSushiClick = (sushi: SushiItem) => {
     console.log("Sushi clicked:", sushi.name);
     setSelectedSushi(sushi);
     setShowModal(true);
   };
 
+  // Обработчик добавления в корзину
   const handleAddToCart = (sushi: SushiItem) => {
-    addToCart(sushi); // Используем addToCart вместо addItem
+    addToCart(sushi);
     console.log("Added to cart:", sushi.name);
+    setShowCart(true);
   };
 
-  // Для отладки - посмотрим что возвращает хук
-  console.log("Cart from hook:", cart);
-  console.log("Is array?", Array.isArray(cart));
+  // Кнопка переключения корзины
+  const CartToggleButton = () => (
+    <button
+      onClick={() => setShowCart(!showCart)}
+      className="cart-toggle-btn"
+      aria-label={showCart ? "Hide cart" : "Show cart"}
+    >
+      🛒 Cart ({getTotalItems()})
+      {getTotalItems() > 0 && (
+        <span className="cart-badge">€{getTotalPrice().toFixed(2)}</span>
+      )}
+    </button>
+  );
+
+  // Кнопка перехода к оформлению заказа
+  const CheckoutButton = () => (
+    <button
+      onClick={() => setShowCheckout(true)}
+      className="checkout-nav-btn"
+      disabled={getTotalItems() === 0}
+    >
+      🚀 Proceed to Checkout
+      {getTotalItems() > 0 && (
+        <span className="checkout-badge">€{getTotalPrice().toFixed(2)}</span>
+      )}
+    </button>
+  );
+
+  // Кнопка назад из чекаута
+  const BackFromCheckoutButton = () => (
+    <button
+      onClick={() => setShowCheckout(false)}
+      className="back-from-checkout-btn"
+    >
+      ← Back to Menu
+    </button>
+  );
+
+  // ==================== RENDER LOGIC ====================
+
+  // Показываем Checkout страницу
+  if (showCheckout) {
+    return (
+      <div className="checkout-wrapper">
+        <header className="checkout-nav-header">
+          <div className="checkout-nav">
+            <BackFromCheckoutButton />
+            <div className="checkout-title">
+              <h1>🍣 Sushi Bar Checkout</h1>
+              <p>Test transaction - no real payment</p>
+            </div>
+          </div>
+        </header>
+        <CheckoutPage />
+      </div>
+    );
+  }
 
   if (showAnimation) {
     return (
@@ -67,6 +140,8 @@ function App() {
             </div>
 
             <div className="header-buttons">
+              <CartToggleButton />
+              <CheckoutButton />
               <button
                 onClick={() => {
                   setShow3DSphere(false);
@@ -88,6 +163,13 @@ function App() {
             </div>
           </header>
 
+          {/* Уведомление об упрощенной версии */}
+          {shouldUseLowPerformance && (
+            <div className="intel-notice">
+              <p>🎮 Using simplified 3D for better performance on Intel Mac</p>
+            </div>
+          )}
+
           <div className="three-d-canvas-container">
             <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
               <ambientLight intensity={0.6} />
@@ -98,7 +180,11 @@ function App() {
                 color="#FF6B6B"
               />
               <Suspense fallback={null}>
-                <SushiSphere onSushiClick={handleSushiClick} />
+                {shouldUseLowPerformance ? (
+                  <LowPerformanceSushiSphere onSushiClick={handleSushiClick} />
+                ) : (
+                  <SushiSphere onSushiClick={handleSushiClick} />
+                )}
               </Suspense>
               <OrbitControls
                 enableZoom={true}
@@ -127,6 +213,7 @@ function App() {
               Interactive 3D Menu • React + Three.js • Cart: {getTotalItems()}{" "}
               items (€{getTotalPrice().toFixed(2)})
             </p>
+            <CheckoutButton />
           </footer>
         </div>
 
@@ -138,18 +225,21 @@ function App() {
           onAddToCart={handleAddToCart}
         />
 
-        {/* Корзина с Local Storage */}
+        {/* Корзина */}
         <SimpleCart
-          cart={cart || []} // Используем cart и проверяем на undefined
+          cart={cart || []}
           onRemove={removeFromCart}
           onUpdateQuantity={updateQuantity}
           totalPrice={getTotalPrice()}
           totalItems={getTotalItems()}
+          onClose={() => setShowCart(false)}
+          isVisible={showCart}
         />
       </>
     );
   }
 
+  // Menu Section
   return (
     <>
       <MenuSection
@@ -162,6 +252,8 @@ function App() {
           setShow3DSphere(true);
         }}
         onAddToCart={handleAddToCart}
+        cartToggle={<CartToggleButton />}
+        checkoutButton={<CheckoutButton />}
       />
 
       {/* Модалка для обычного меню */}
@@ -172,13 +264,15 @@ function App() {
         onAddToCart={handleAddToCart}
       />
 
-      {/* Корзина с Local Storage */}
+      {/* Корзина */}
       <SimpleCart
-        cart={cart || []} // Используем cart, а не items
-        onRemove={removeFromCart} // Используем onRemove, а не onRemoveItem
-        onUpdateQuantity={updateQuantity} // Используем onUpdateQuantity
+        cart={cart || []}
+        onRemove={removeFromCart}
+        onUpdateQuantity={updateQuantity}
         totalPrice={getTotalPrice()}
         totalItems={getTotalItems()}
+        onClose={() => setShowCart(false)}
+        isVisible={showCart}
       />
     </>
   );
