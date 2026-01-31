@@ -11,8 +11,11 @@ export default function SunriseAnimation({
   const [showText, setShowText] = useState(false);
   const [brightness, setBrightness] = useState(0.3);
   const [imageLoaded, setImageLoaded] = useState(false);
+  const [isSkipped, setIsSkipped] = useState(false);
 
   useEffect(() => {
+    if (isSkipped) return; // Если пропустили, не запускаем анимацию
+
     // Загрузка изображения
     const img = new Image();
     img.src = "/images/sun.png";
@@ -44,10 +47,38 @@ export default function SunriseAnimation({
       clearTimeout(textTimer);
       clearTimeout(completionTimer);
     };
-  }, [onComplete]);
+  }, [onComplete, isSkipped]);
+
+  // Обработчик пропуска
+  const handleSkip = () => {
+    setIsSkipped(true);
+    onComplete();
+  };
+
+  // Горячие клавиши
+  useEffect(() => {
+    const handleKeyPress = (e: KeyboardEvent) => {
+      if (e.key === " " || e.key === "Escape" || e.key === "Enter") {
+        handleSkip();
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, []);
 
   return (
     <div className="scene-container">
+      {/* Кнопка Skip */}
+      <button
+        className="skip-button"
+        onClick={handleSkip}
+        aria-label="Skip animation"
+      >
+        ⏩ Skip
+        <span className="skip-hint">(ESC / Space)</span>
+      </button>
+
       {/* Световая вспышка (солнце) */}
       <div className="sun" />
 

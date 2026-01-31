@@ -31,7 +31,7 @@ function App() {
   // Состояния для модалки и корзины
   const [selectedSushi, setSelectedSushi] = useState<SushiItem | null>(null);
   const [showModal, setShowModal] = useState(false);
-  const [showCart, setShowCart] = useState(true);
+  const [showCart, setShowCart] = useState(false);
 
   // Определяем какую версию 3D сферы использовать
   const shouldUseLowPerformance = isIntelMac();
