@@ -156,36 +156,32 @@ function App() {
   if (view === "3d") {
     return (
       <>
-        <div className="three-d-container">
-          <header className="three-d-header">
+        <div className="three-d-container fixed inset-0 flex flex-col overflow-hidden bg-slate-900">
+          <header className="three-d-header flex-shrink-0 z-50">
+            {/* Твой текущий хедер */}
             <div
               className="logo"
-              onClick={() => {
-                console.log("CLICKED ADMIN");
-                setView("admin");
-              }}
-              style={{ cursor: "pointer", position: "relative", zIndex: 100 }}
+              onClick={() => setView("admin")}
+              style={{ cursor: "pointer" }}
             >
               <div className="logo-circle">寿</div>
-              <h1>3D Menu</h1>
+              <h1 className="text-white">3D Menu</h1>
             </div>
             <div className="header-buttons">
               <CartButton />
               <CheckoutNavButton />
               <button onClick={() => setView("menu")} className="back-btn">
-                ← Text Menu
+                ← Menu
               </button>
             </div>
           </header>
 
-          {shouldUseLowPerformance && (
-            <div className="intel-notice">
-              <p>Optimized Mode Active</p>
-            </div>
-          )}
-
-          <div className="three-d-canvas-container">
-            <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
+          <div className="flex-grow relative w-full h-full">
+            <Canvas
+              camera={{ position: [0, 0, 8], fov: 50 }}
+              dpr={[1, 2]} // Оптимизация для мобильных ретина-дисплеев
+              style={{ touchAction: "none" }} // Чтобы скролл не дергался
+            >
               <ambientLight intensity={0.6} />
               <pointLight position={[10, 10, 10]} intensity={1} />
               <Suspense fallback={null}>
@@ -200,6 +196,7 @@ function App() {
                 autoRotateSpeed={0.3}
                 maxDistance={12}
                 minDistance={3}
+                enablePan={false}
               />
             </Canvas>
           </div>
