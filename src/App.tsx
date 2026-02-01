@@ -185,7 +185,7 @@ function App() {
           )}
 
           <div className="three-d-canvas-container">
-            <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
+            <Canvas camera={{ position: [0, 0, 8], fov: 50 }}>
               <ambientLight intensity={0.6} />
               <pointLight position={[10, 10, 10]} intensity={1} />
               <Suspense fallback={null}>
