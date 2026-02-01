@@ -1,42 +1,48 @@
-import { useState, Suspense } from "react";
+import { useState, Suspense, useMemo } from "react";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+
+// Components
 import SunriseAnimation from "./components/Sections/SunriseAnimation";
 import MenuSection from "./components/Sections/MenuSection";
 import SushiSphere from "./components/Menu3D/SushiSphere";
 import SushiModal from "./components/UI/SushiModal";
 import SimpleCart from "./components/Cart/SimpleCart";
 import CheckoutPage from "./components/Checkout/CheckoutPage";
+import LowPerformanceSushiSphere from "./components/Menu3D/LowPerformanceSushiSphere";
+import AdminOrders from "./components/Admin/AdminOrders";
+import Footer from "./components/Layout/Footer";
+
+// Hooks & Types
 import { useCartStorage } from "./hooks/useCartStorage";
 import type { SushiItem } from "./types";
-import LowPerformanceSushiSphere from "./components/Menu3D/LowPerformanceSushiSphere";
 import "./index.css";
 
-// Функция определения Intel Mac + Chrome
+// Utils: Вынесено из компонента
 const isIntelMac = () => {
   if (typeof navigator === "undefined") return false;
-  const isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
-  const isChrome =
-    /Chrome/.test(navigator.userAgent) && !/Edge/.test(navigator.userAgent);
-  return isMac && isChrome;
+  return (
+    /Mac/.test(navigator.platform) &&
+    /Chrome/.test(navigator.userAgent) &&
+    !/Edge/.test(navigator.userAgent)
+  );
 };
 
 function App() {
-  // Состояния для навигации
-  const [showAnimation, setShowAnimation] = useState(true);
-  const [showMenuSection, setShowMenuSection] = useState(false);
-  const [show3DSphere, setShow3DSphere] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
+  // Navigation State
+  const [view, setView] = useState<
+    "animation" | "menu" | "3d" | "checkout" | "admin"
+  >("animation");
 
-  // Состояния для модалки и корзины
+  // UI State
   const [selectedSushi, setSelectedSushi] = useState<SushiItem | null>(null);
   const [showModal, setShowModal] = useState(false);
   const [showCart, setShowCart] = useState(false);
 
-  // Определяем какую версию 3D сферы использовать
-  const shouldUseLowPerformance = isIntelMac();
+  // Performance Check
+  const shouldUseLowPerformance = useMemo(() => isIntelMac(), []);
 
-  // Хук для работы с корзиной
+  // Cart Logic
   const {
     cart,
     addToCart,
@@ -44,29 +50,52 @@ function App() {
     updateQuantity,
     getTotalPrice,
     getTotalItems,
+    clearCart,
   } = useCartStorage();
 
-  // Обработчик клика на суши
+  // --- Handlers ---
   const handleSushiClick = (sushi: SushiItem) => {
-    console.log("Sushi clicked:", sushi.name);
     setSelectedSushi(sushi);
     setShowModal(true);
   };
 
-  // Обработчик добавления в корзину
   const handleAddToCart = (sushi: SushiItem) => {
     addToCart(sushi);
-    console.log("Added to cart:", sushi.name);
     setShowCart(true);
   };
 
-  // Кнопка переключения корзины
-  const CartToggleButton = () => (
-    <button
-      onClick={() => setShowCart(!showCart)}
-      className="cart-toggle-btn"
-      aria-label={showCart ? "Hide cart" : "Show cart"}
-    >
+  // Метод для будущей отправки на бэкенд (api/index.js)
+  const handlePlaceOrder = async (orderData: any) => {
+    try {
+      const response = await fetch("http://localhost:3001/api/orders", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          customer: {
+            name: orderData.name,
+            email: orderData.email,
+          },
+          items: cart,
+          total: getTotalPrice(),
+          deliveryAddress: `${orderData.address}, ${orderData.city}`,
+          contact: orderData.phone,
+        }),
+      });
+
+      const result = await response.json();
+      if (result.success) {
+        return result; // Возвращаем результат в CheckoutPage
+      }
+      throw new Error("Server error");
+    } catch (error) {
+      console.error("Order failed:", error);
+      throw error;
+    }
+  };
+
+  // --- Shared UI Components ---
+  const CartButton = () => (
+    <button onClick={() => setShowCart(true)} className="cart-toggle-btn">
       🛒 Cart ({getTotalItems()})
       {getTotalItems() > 0 && (
         <span className="cart-badge">€{getTotalPrice().toFixed(2)}</span>
@@ -74,99 +103,84 @@ function App() {
     </button>
   );
 
-  // Кнопка перехода к оформлению заказа
-  const CheckoutButton = () => (
+  const CheckoutNavButton = () => (
     <button
-      onClick={() => setShowCheckout(true)}
+      onClick={() => setView("checkout")}
       className="checkout-nav-btn"
       disabled={getTotalItems() === 0}
     >
-      🚀 Proceed to Checkout
-      {getTotalItems() > 0 && (
-        <span className="checkout-badge">€{getTotalPrice().toFixed(2)}</span>
-      )}
+      🚀 Checkout
     </button>
   );
 
-  // Кнопка назад из чекаута
-  const BackFromCheckoutButton = () => (
-    <button
-      onClick={() => setShowCheckout(false)}
-      className="back-from-checkout-btn"
-    >
-      ← Back to Menu
-    </button>
-  );
+  // ==================== RENDER SCENES ====================
 
-  // ==================== RENDER LOGIC ====================
+  // 1. ANIMATION SCENE
+  if (view === "animation") {
+    return <SunriseAnimation onComplete={() => setView("menu")} />;
+  }
 
-  // Показываем Checkout страницу
-  if (showCheckout) {
+  if (view === "admin") {
+    return (
+      <div className="admin-wrapper">
+        <button onClick={() => setView("menu")} className="exit-admin">
+          ← Back to Site
+        </button>
+        <AdminOrders />
+      </div>
+    );
+  }
+  // 2. CHECKOUT SCENE
+  if (view === "checkout") {
     return (
       <div className="checkout-wrapper">
         <header className="checkout-nav-header">
-          <div className="checkout-nav">
-            <BackFromCheckoutButton />
-            <div className="checkout-title">
-              <h1>🍣 Sushi Bar Checkout</h1>
-              <p>Test transaction - no real payment</p>
-            </div>
-          </div>
+          <button
+            onClick={() => setView("3d")}
+            className="back-from-checkout-btn"
+          >
+            ← Back
+          </button>
+          <h1>Checkout</h1>
         </header>
-        <CheckoutPage />
+        <CheckoutPage
+          cart={cart}
+          total={getTotalPrice()}
+          onOrderSubmit={handlePlaceOrder}
+        />
       </div>
     );
   }
 
-  if (showAnimation) {
-    return (
-      <SunriseAnimation
-        onComplete={() => {
-          setShowAnimation(false);
-          setShowMenuSection(true);
-        }}
-      />
-    );
-  }
-
-  if (show3DSphere) {
+  // 3. 3D SPHERE SCENE
+  if (view === "3d") {
     return (
       <>
         <div className="three-d-container">
           <header className="three-d-header">
-            <div className="logo">
+            <div
+              className="logo"
+              onClick={() => {
+                console.log("CLICKED ADMIN");
+                setView("admin");
+              }}
+              style={{ cursor: "pointer", position: "relative", zIndex: 100 }}
+            >
               <div className="logo-circle">寿</div>
-              <h1>3D Sushi Sphere</h1>
+              <h1>3D Menu</h1>
             </div>
-
             <div className="header-buttons">
-              <CartToggleButton />
-              <CheckoutButton />
-              <button
-                onClick={() => {
-                  setShow3DSphere(false);
-                  setShowMenuSection(true);
-                }}
-                className="back-btn"
-              >
-                ← Back to Menu
-              </button>
-              <button
-                onClick={() => {
-                  setShow3DSphere(false);
-                  setShowAnimation(true);
-                }}
-                className="sunrise-btn"
-              >
-                🌅 Start Over
+              <CartButton />
+              <CheckoutNavButton />
+              <button onClick={() => setView("menu")} className="back-btn">
+                ← Text Menu
               </button>
             </div>
           </header>
 
-          {/* Уведомление об упрощенной версии */}
           {shouldUseLowPerformance && (
             <div className="intel-notice">
-              <p>🎮 Using simplified 3D for better performance on Intel Mac</p>
+              <p>Optimized Mode Active</p>
             </div>
           )}
 
@@ -174,11 +188,6 @@ function App() {
             <Canvas camera={{ position: [0, 0, 8], fov: 60 }}>
               <ambientLight intensity={0.6} />
               <pointLight position={[10, 10, 10]} intensity={1} />
-              <pointLight
-                position={[-10, -10, -10]}
-                intensity={0.5}
-                color="#FF6B6B"
-              />
               <Suspense fallback={null}>
                 {shouldUseLowPerformance ? (
                   <LowPerformanceSushiSphere onSushiClick={handleSushiClick} />
@@ -187,45 +196,44 @@ function App() {
                 )}
               </Suspense>
               <OrbitControls
-                enableZoom={true}
-                enablePan={true}
-                enableRotate={true}
-                zoomSpeed={0.6}
-                panSpeed={0.5}
-                rotateSpeed={0.5}
-                maxDistance={12}
-                minDistance={3}
                 autoRotate
                 autoRotateSpeed={0.3}
+                maxDistance={12}
+                minDistance={3}
               />
             </Canvas>
-
-            <div className="canvas-hint">
-              <p>
-                🖱️ Rotate with mouse • 🔍 Zoom with wheel • 👆 Click sushi for
-                details
-              </p>
-            </div>
           </div>
-
-          <footer className="three-d-footer">
-            <p>
-              Interactive 3D Menu • React + Three.js • Cart: {getTotalItems()}{" "}
-              items (€{getTotalPrice().toFixed(2)})
-            </p>
-            <CheckoutButton />
-          </footer>
         </div>
+        <CommonUI />
+      </>
+    );
+  }
 
-        {/* Модалка */}
+  // 4. DEFAULT MENU SECTION
+  return (
+    <>
+      <MenuSection
+        onBackToSunrise={() => setView("animation")}
+        onOpen3DMenu={() => setView("3d")}
+        onAddToCart={handleAddToCart}
+        cartToggle={<CartButton />}
+        checkoutButton={<CheckoutNavButton />}
+      />
+      <CommonUI />
+      <Footer />
+    </>
+  );
+
+  // Вспомогательный компонент, чтобы не дублировать модалки
+  function CommonUI() {
+    return (
+      <>
         <SushiModal
           sushi={selectedSushi}
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           onAddToCart={handleAddToCart}
         />
-
-        {/* Корзина */}
         <SimpleCart
           cart={cart || []}
           onRemove={removeFromCart}
@@ -238,44 +246,5 @@ function App() {
       </>
     );
   }
-
-  // Menu Section
-  return (
-    <>
-      <MenuSection
-        onBackToSunrise={() => {
-          setShowMenuSection(false);
-          setShowAnimation(true);
-        }}
-        onOpen3DMenu={() => {
-          setShowMenuSection(false);
-          setShow3DSphere(true);
-        }}
-        onAddToCart={handleAddToCart}
-        cartToggle={<CartToggleButton />}
-        checkoutButton={<CheckoutButton />}
-      />
-
-      {/* Модалка для обычного меню */}
-      <SushiModal
-        sushi={selectedSushi}
-        isOpen={showModal}
-        onClose={() => setShowModal(false)}
-        onAddToCart={handleAddToCart}
-      />
-
-      {/* Корзина */}
-      <SimpleCart
-        cart={cart || []}
-        onRemove={removeFromCart}
-        onUpdateQuantity={updateQuantity}
-        totalPrice={getTotalPrice()}
-        totalItems={getTotalItems()}
-        onClose={() => setShowCart(false)}
-        isVisible={showCart}
-      />
-    </>
-  );
 }
-
 export default App;
