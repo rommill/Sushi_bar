@@ -18,9 +18,7 @@ export default function AdminOrders() {
   // 1. ФУНКЦИЯ ЗАГРУЗКИ (она была потеряна)
   const fetchOrders = async () => {
     try {
-      const response = await fetch("http://localhost:3001/api/orders");
-      const data = await response.json();
-      setOrders(data);
+      setOrders([]);
     } catch (error) {
       console.error("Error fetching orders:", error);
     } finally {

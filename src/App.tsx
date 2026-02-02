@@ -68,7 +68,7 @@ function App() {
   const handlePlaceOrder = async (orderData: any) => {
     const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
     const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
-
+    console.log("Token check:", BOT_TOKEN);
     const message = `
 🍣 **НОВЫЙ ЗАКАЗ!**
 ━━━━━━━━━━━━━━
