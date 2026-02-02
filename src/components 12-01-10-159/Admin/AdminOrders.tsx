@@ -17,59 +17,26 @@ export default function AdminOrders() {
 
   // 1. ФУНКЦИЯ ЗАГРУЗКИ (она была потеряна)
   const fetchOrders = async () => {
-    try {
-      setOrders([]);
-    } catch (error) {
-      console.error("Error fetching orders:", error);
-    } finally {
-      setLoading(false);
-    }
+    setOrders([]);
+    setLoading(false);
   };
 
   // 2. ФУНКЦИЯ ОБНОВЛЕНИЯ СТАТУСА
   const updateStatus = async (id: string, newStatus: string) => {
-    try {
-      const response = await fetch(
-        `http://localhost:3001/api/orders/${id}/status`,
-        {
-          method: "PATCH",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ status: newStatus }),
-        },
-      );
-
-      if (response.ok) {
-        setOrders((prev) =>
-          prev.map((order) =>
-            order.id === id ? { ...order, status: newStatus } : order,
-          ),
-        );
-      }
-    } catch (error) {
-      console.error("Failed to update status", error);
-    }
+    setOrders((prev) =>
+      prev.map((order) =>
+        order.id === id ? { ...order, status: newStatus } : order,
+      ),
+    );
   };
 
   // 3. ФУНКЦИЯ УДАЛЕНИЯ (АРХИВАЦИИ)
   const handleCompleteOrder = async (id: string) => {
-    if (!window.confirm("Mark this order as completed?")) return;
-
-    try {
-      const response = await fetch(`http://localhost:3001/api/orders/${id}`, {
-        method: "DELETE",
-      });
-      if (response.ok) {
-        setOrders((prev) => prev.filter((order) => order.id !== id));
-      }
-    } catch (error) {
-      alert("Failed to complete order");
-    }
+    setOrders((prev) => prev.filter((order) => order.id !== id));
   };
 
   useEffect(() => {
     fetchOrders();
-    const interval = setInterval(fetchOrders, 10000);
-    return () => clearInterval(interval);
   }, []);
 
   if (loading) return <div className="admin-loading">Loading dashboard...</div>;
