@@ -64,7 +64,7 @@ function App() {
     setShowCart(true);
   };
 
-  // Метод для отправки заказа в Telegram
+  // Method для отправки заказа в Telegram
   const handlePlaceOrder = async (orderData: any) => {
     const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
     const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
