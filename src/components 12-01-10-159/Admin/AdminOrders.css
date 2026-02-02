@@ -1,0 +1,134 @@
+.admin-container {
+  padding: 40px;
+  background: #0f0f0f;
+  min-height: 100vh;
+  color: #efefef;
+  font-family: "Inter", sans-serif;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 30px;
+  border-bottom: 1px solid #333;
+  padding-bottom: 20px;
+}
+
+.orders-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 20px;
+}
+
+.order-card {
+  background: #1a1a1a;
+  border: 1px solid #333;
+  border-radius: 16px;
+  padding: 20px;
+  transition: transform 0.2s;
+}
+
+.order-card:hover {
+  transform: translateY(-5px);
+  border-color: #ff4444;
+}
+
+.status-badge.confirmed {
+  background: rgba(76, 175, 80, 0.1);
+  color: #4caf50;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.exit-admin {
+  background: transparent;
+  color: #888;
+  border: 1px solid #444;
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+.exit-admin:hover {
+  background: #ff4444;
+  color: white;
+  border-color: #ff4444;
+}
+
+.order-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.complete-btn {
+  background: #4caf50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: 0.2s;
+}
+
+.complete-btn:hover {
+  background: #45a049;
+  transform: scale(1.05);
+}
+
+.qty {
+  color: #ff4444;
+  font-weight: bold;
+  margin-right: 5px;
+}
+
+.order-card.status-confirmed {
+  border-left: 5px solid #ff4444;
+} /* Новый - Красный */
+.order-card.status-cooking {
+  border-left: 5px solid #ffbb33;
+  background: #221f18;
+} /* В процессе - Желтый */
+.order-card.status-ready {
+  border-left: 5px solid #00c851;
+  background: #182218;
+} /* Готов - Зеленый */
+
+.status-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.status-btn {
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 0.75rem;
+  transition: 0.3s;
+}
+
+.status-btn.cooking {
+  background: #ffbb33;
+  color: #000;
+}
+.status-btn.ready {
+  background: #00c851;
+  color: #fff;
+}
+.status-btn.complete {
+  background: #33b5e5;
+  color: #fff;
+}
+
+.status-btn:hover {
+  opacity: 0.8;
+  transform: translateY(-1px);
+}

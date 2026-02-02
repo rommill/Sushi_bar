@@ -64,31 +64,51 @@ function App() {
     setShowCart(true);
   };
 
-  // Метод для будущей отправки на бэкенд (api/index.js)
+  // Метод для отправки заказа в Telegram
   const handlePlaceOrder = async (orderData: any) => {
+    const BOT_TOKEN = import.meta.env.VITE_TELEGRAM_BOT_TOKEN;
+    const CHAT_ID = import.meta.env.VITE_TELEGRAM_CHAT_ID;
+
+    const message = `
+🍣 **НОВЫЙ ЗАКАЗ!**
+━━━━━━━━━━━━━━
+👤 **Клиент:** ${orderData.name}
+📞 **Телефон:** ${orderData.phone}
+📍 **Адрес:** ${orderData.address}, ${orderData.city}
+📧 **Email:** ${orderData.email}
+
+🛒 **ТОВАРЫ:**
+${cart.map((item: any) => `• ${item.name} (x${item.quantity}) - €${(item.price * item.quantity).toFixed(2)}`).join("\n")}
+
+━━━━━━━━━━━━━━
+💰 **ИТОГО: €${getTotalPrice().toFixed(2)}**
+    `.trim();
+
     try {
-      const response = await fetch("http://localhost:3001/api/orders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          customer: {
-            name: orderData.name,
-            email: orderData.email,
-          },
-          items: cart,
-          total: getTotalPrice(),
-          deliveryAddress: `${orderData.address}, ${orderData.city}`,
-          contact: orderData.phone,
-        }),
-      });
+      const response = await fetch(
+        `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            chat_id: CHAT_ID,
+            text: message,
+            parse_mode: "Markdown",
+          }),
+        },
+      );
+
+      if (!response.ok) throw new Error("Telegram API Error");
 
       const result = await response.json();
-      if (result.success) {
-        return result; // Возвращаем результат в CheckoutPage
+      if (result.ok) {
+        clearCart();
+        return { success: true };
       }
-      throw new Error("Server error");
+      throw new Error("Failed to send message");
     } catch (error) {
       console.error("Order failed:", error);
+      alert("Ошибка при отправке заказа.");
       throw error;
     }
   };

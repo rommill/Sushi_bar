@@ -1,0 +1,172 @@
+.scene-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  z-index: 1000;
+  background: #0c0c0c;
+  animation: light-up 8s ease-in-out forwards;
+}
+
+/* Картинка (Домик) - исправлено */
+.silhouette {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: url("/images/sun.png") no-repeat center center;
+  background-size: contain;
+  z-index: 2;
+  transition: filter 6s ease-in-out;
+}
+
+/* Слой световой вспышки */
+.sun {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  background: radial-gradient(
+    circle,
+    rgba(255, 77, 77, 0.4) 0%,
+    rgba(12, 12, 12, 0) 70%
+  );
+  z-index: 1;
+  opacity: 0;
+  animation: flash 8s ease-in-out forwards;
+}
+
+/* Текст */
+.invite-text {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  color: #ffffff;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: all 2.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.invite-text.show {
+  opacity: 1;
+  transform: translateY(0);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+}
+
+.loading-indicator {
+  margin-top: 40px;
+}
+
+.loading-bar {
+  width: 300px;
+  height: 4px;
+  background: linear-gradient(to right, transparent, #d63031, transparent);
+  margin: 0 auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 2px;
+}
+
+.loading-bar::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #ff6b6b, transparent);
+  animation: loading 2s infinite;
+}
+
+/* Анимации */
+@keyframes light-up {
+  0% {
+    background-color: #0c0c0c;
+  }
+  100% {
+    background-color: #fff3e0;
+  }
+}
+
+@keyframes flash {
+  0% {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  100% {
+    opacity: 1;
+    background: radial-gradient(
+      circle,
+      rgba(255, 243, 224, 0.6) 0%,
+      rgba(255, 77, 77, 0.3) 50%,
+      transparent 70%
+    );
+  }
+}
+
+@keyframes loading {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+.skip-button {
+  position: absolute;
+  top: 30px;
+  right: 30px;
+  padding: 12px 24px;
+  background: rgba(255, 255, 255, 0.15);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 25px;
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+  backdrop-filter: blur(10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.skip-button:hover {
+  background: rgba(255, 255, 255, 0.25);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
+}
+
+.skip-button:active {
+  transform: translateY(0);
+}
+
+.skip-hint {
+  font-size: 12px;
+  opacity: 0.7;
+  font-weight: normal;
+}
+
+/* Для мобильных - делаем кнопку больше */
+@media (max-width: 768px) {
+  .skip-button {
+    top: 20px;
+    right: 20px;
+    padding: 10px 16px;
+    font-size: 14px;
+  }
+
+  .skip-hint {
+    display: none; /* На мобильных скрываем подсказку */
+  }
+}
